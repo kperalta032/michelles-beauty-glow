@@ -421,16 +421,16 @@ if (savedCheckoutId) {
 <script>
 window.addEventListener('load', function () {
   if (new URLSearchParams(window.location.search).get('openCart') === '1') {
-    const waitForCart = setInterval(function () {
-      if (typeof checkout !== 'undefined' && checkout && typeof openCart === 'function') {
-        clearInterval(waitForCart);
+    const timer = setInterval(function () {
+      if (checkout && typeof openCart === 'function') {
+        clearInterval(timer);
         openCart();
       }
     }, 300);
 
     setTimeout(function () {
-      clearInterval(waitForCart);
-    }, 10000);
+      clearInterval(timer);
+    }, 15000);
   }
 });
 function openCart() {
