@@ -64,6 +64,78 @@
       domain: 'pd9izq-ju.myshopify.com',
       storefrontAccessToken: '78d6d04d0b8e8628c699b6f22eb738a4',
     });
+   client.product.fetch('15444140130438').then(function(product) {
+  const grid = document.getElementById('body-oil-grid');
+  const scents = {};
+
+  product.variants.forEach(function(variant) {
+    const scent = variant.selectedOptions.find(
+      option => option.name.toLowerCase() === 'scent'
+    )?.value;
+
+    if (!scent) return;
+
+    if (!scents[scent]) scents[scent] = [];
+    scents[scent].push(variant);
+  });
+
+  Object.entries(scents).forEach(function([scent, variants]) {
+    const card = document.createElement('div');
+    card.style.cssText =
+      'background:white;padding:20px;border-radius:15px;' +
+      'box-shadow:0 3px 12px #0001;text-align:center;';
+
+    const image = variants[0].image || product.images[0];
+    const imageUrl = image?.src || '';
+
+    const title = document.createElement('h3');
+    title.textContent = scent + ' Body Oil';
+
+    const photo = document.createElement('img');
+    photo.src = imageUrl;
+    photo.alt = scent + ' Body Oil';
+    photo.style.cssText = 'width:100%;max-width:240px;border-radius:12px;';
+
+    const size = document.createElement('select');
+    size.style.cssText = 'padding:10px;margin:10px;width:85%;';
+
+    variants.forEach(function(variant) {
+      const option = document.createElement('option');
+      option.value = variant.id;
+      option.textContent =
+        variant.selectedOptions.find(o => o.name.toLowerCase() === 'size')?.value
+        + ' - $' + Number(variant.price.amount || variant.price).toFixed(2);
+      size.appendChild(option);
+    });
+
+    const button = document.createElement('button');
+    button.textContent = 'Choose This Body Oil';
+    button.style.cssText =
+      'background:#e58aaf;color:white;border:0;border-radius:8px;' +
+      'padding:12px 20px;cursor:pointer;';
+
+    button.onclick = function() {
+      const selected = variants.find(v => v.id === size.value);
+      if (selected) {
+        const checkoutUrl = product.onlineStoreUrl;
+        if (checkoutUrl) {
+          window.location.href = checkoutUrl;
+        } else {
+          alert('The shopping option is being prepared.');
+        }
+      }
+    };
+
+    card.append(photo, title, size, button);
+    grid.appendChild(card);
+  });
+
+  grid.style.cssText =
+    'display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));' +
+    'gap:20px;max-width:1100px;margin:30px auto;padding:15px;';
+}).catch(function(error) {
+  console.error('Unable to load Body Oils:', error);
+});
     ShopifyBuy.UI.onReady(client).then(function (ui) {
       ui.createComponent('product', {
         id: '15444140130438',
