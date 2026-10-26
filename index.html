@@ -323,7 +323,7 @@
   <footer>
     <p>Michelle's Beauty Glow © 2026</p>
   </footer>
- <a href="body-oil.html?openCart=1"
+<a href="#" onclick="event.preventDefault(); openHomeCart();"
    style="position:fixed;
           top:20px;
           right:20px;
@@ -336,6 +336,10 @@
           z-index:9999;">
   🛍️ View Cart
 </a>
-  
+  <script>
+function openHomeCart() {
+  alert("We are connecting your shopping bag!");
+}
+</script>
 </body>
 </html>
