@@ -41,6 +41,7 @@
   <div id='product-component-1792973452370'></div>
 <script type="text/javascript">
 /*<![CDATA[*/
+  let checkout = null;
 (function () {
   var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
   if (window.ShopifyBuy) {
@@ -64,8 +65,6 @@
       domain: 'pd9izq-ju.myshopify.com',
       storefrontAccessToken: '78d6d04d0b8e8628c699b6f22eb738a4',
     });
-    let checkout = null;
-
 client.checkout.create().then(function(newCheckout) {
   checkout = newCheckout;
 }).catch(function(error) {
