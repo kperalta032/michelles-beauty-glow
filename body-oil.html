@@ -180,7 +180,8 @@ if (savedCheckoutId) {
 }).catch(function(error) {
   console.error('Unable to load Body Oils:', error);
 });
-    ShopifyBuy.UI.onReady(client).then(function (ui) {
+   ShopifyBuy.UI.onReady(client).then(function (ui) {
+  return;
       ui.createComponent('product', {
         id: '15444140130438',
         node: document.getElementById('product-component-1792973452370'),
