@@ -374,7 +374,12 @@ client.checkout.create().then(function(newCheckout) {
   cursor: pointer;
 }
 </style>
-
+<button
+  type="button"
+  onclick="openCart()"
+  style="position:fixed; top:20px; right:20px; z-index:9997; background:#e58aaf; color:white; border:none; border-radius:30px; padding:13px 20px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+  🛍️ View Cart
+</button>
 <div id="cart-overlay" onclick="closeCart()"></div>
 
 <div id="side-cart">
