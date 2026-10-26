@@ -419,6 +419,20 @@ if (savedCheckoutId) {
 </div>
 
 <script>
+window.addEventListener('load', function () {
+  if (new URLSearchParams(window.location.search).get('openCart') === '1') {
+    const waitForCart = setInterval(function () {
+      if (typeof checkout !== 'undefined' && checkout && typeof openCart === 'function') {
+        clearInterval(waitForCart);
+        openCart();
+      }
+    }, 300);
+
+    setTimeout(function () {
+      clearInterval(waitForCart);
+    }, 10000);
+  }
+});
 function openCart() {
 if (!checkout) {
     alert("The shopping cart is not ready yet.");
