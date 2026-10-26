@@ -115,16 +115,18 @@
       'padding:12px 20px;cursor:pointer;';
 
     button.onclick = function() {
-      const selected = variants.find(v => v.id === size.value);
-      if (selected) {
-        const checkoutUrl = product.onlineStoreUrl;
-        if (checkoutUrl) {
-          window.location.href = checkoutUrl;
-        } else {
-          alert('The shopping option is being prepared.');
-        }
-      }
-    };
+  const selected = variants.find(v => String(v.id) === String(size.value));
+
+  if (selected) {
+    const variantId = selected.id.toString().split('/').pop();
+
+    window.location.href =
+      'https://pd9izq-ju.myshopify.com/cart/' +
+      variantId + ':1';
+  } else {
+    alert('Please select a size.');
+  }
+};
 
     card.append(photo, title, size, button);
     grid.appendChild(card);
