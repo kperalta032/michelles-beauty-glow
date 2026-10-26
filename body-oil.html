@@ -66,11 +66,33 @@
       domain: 'pd9izq-ju.myshopify.com',
       storefrontAccessToken: '78d6d04d0b8e8628c699b6f22eb738a4',
     });
-client.checkout.create().then(function(newCheckout) {
-  checkout = newCheckout;
-}).catch(function(error) {
-  console.error('Unable to create cart:', error);
-});
+const savedCheckoutId = localStorage.getItem('michelle_checkout_id');
+
+function createNewCheckout() {
+  return client.checkout.create().then(function(newCheckout) {
+    checkout = newCheckout;
+    localStorage.setItem('michelle_checkout_id', checkout.id);
+  });
+}
+
+if (savedCheckoutId) {
+  client.checkout.fetch(savedCheckoutId)
+    .then(function(savedCheckout) {
+      if (savedCheckout && !savedCheckout.completedAt) {
+        checkout = savedCheckout;
+      } else {
+        return createNewCheckout();
+      }
+    })
+    .catch(function(error) {
+      console.error('Unable to restore cart:', error);
+      return createNewCheckout();
+    });
+} else {
+  createNewCheckout().catch(function(error) {
+    console.error('Unable to create cart:', error);
+  });
+}
    client.product.fetch('gid://shopify/Product/15444140130438').then(function(product) {
   const grid = document.getElementById('body-oil-grid');
   const scents = {};
