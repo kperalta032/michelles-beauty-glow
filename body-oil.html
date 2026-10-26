@@ -328,5 +328,110 @@ client.checkout.create().then(function(newCheckout) {
 /*]]>*/
 </script>
   </div>
+  <style>
+#cart-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 9998;
+}
+
+#side-cart {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: min(380px, 100%);
+  height: 100%;
+  background: #fff5f8;
+  box-shadow: -4px 0 20px #0002;
+  z-index: 9999;
+  transition: right 0.3s ease;
+  padding: 25px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+#side-cart.open {
+  right: 0;
+}
+
+#side-cart h2 {
+  color: #d65a91;
+}
+
+#cart-items {
+  margin: 25px 0;
+}
+
+#cart-checkout {
+  background: #e58aaf;
+  color: white;
+  border: none;
+  padding: 15px;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+</style>
+
+<div id="cart-overlay" onclick="closeCart()"></div>
+
+<div id="side-cart">
+  <button onclick="closeCart()"
+    style="float:right;border:0;background:none;
+    font-size:26px;cursor:pointer;">&times;</button>
+
+  <h2>Your Shopping Bag 🛍️</h2>
+  <div id="cart-items"></div>
+  <h3 id="cart-total">Total: $0.00</h3>
+
+  <button id="cart-checkout" onclick="goToCheckout()">
+    Checkout
+  </button>
+</div>
+
+<script>
+function openCart() {
+  if (!checkout) return;
+
+  const items = document.getElementById('cart-items');
+  items.innerHTML = '';
+
+  checkout.lineItems.forEach(function(item) {
+    const div = document.createElement('div');
+    div.style.cssText =
+      'padding:12px 0;border-bottom:1px solid #e5c5d1;';
+
+    const name = document.createElement('strong');
+    name.textContent = item.title;
+
+    const details = document.createElement('p');
+    details.textContent =
+      item.variant.title + ' × ' + item.quantity;
+
+    div.append(name, details);
+    items.appendChild(div);
+  });
+
+  const total = checkout.totalPrice.amount || checkout.totalPrice;
+  document.getElementById('cart-total').textContent =
+    'Total: $' + Number(total).toFixed(2);
+
+  document.getElementById('side-cart').classList.add('open');
+  document.getElementById('cart-overlay').style.display = 'block';
+}
+
+function closeCart() {
+  document.getElementById('side-cart').classList.remove('open');
+  document.getElementById('cart-overlay').style.display = 'none';
+}
+
+function goToCheckout() {
+  if (checkout && checkout.webUrl) {
+    window.location.href = checkout.webUrl;
+  }
+}
+</script>
 </body>
 </html>
