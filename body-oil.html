@@ -420,8 +420,10 @@ if (savedCheckoutId) {
 
 <script>
 function openCart() {
-  if (!checkout) return;
-
+if (!checkout) {
+    alert("The shopping cart is not ready yet.");
+    return;
+}
   const items = document.getElementById('cart-items');
   items.innerHTML = '';
 
