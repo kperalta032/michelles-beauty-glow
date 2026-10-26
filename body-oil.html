@@ -121,18 +121,31 @@ client.checkout.create().then(function(newCheckout) {
       'background:#e58aaf;color:white;border:0;border-radius:8px;' +
       'padding:12px 20px;cursor:pointer;';
 
-    button.onclick = function() {
-  const selected = variants.find(v => String(v.id) === String(size.value));
+   button.onclick = function() {
+  const selected = variants.find(
+    v => String(v.id) === String(size.value)
+  );
 
-  if (selected) {
-    const variantId = selected.id.toString().split('/').pop();
-
-    window.location.href =
-      'https://pd9izq-ju.myshopify.com/cart/' +
-      variantId + ':1';
-  } else {
+  if (!selected) {
     alert('Please select a size.');
+    return;
   }
+
+  if (!checkout) {
+    alert('The cart is loading. Please try again.');
+    return;
+  }
+
+  client.checkout.addLineItems(checkout.id, [{
+    variantId: selected.id,
+    quantity: 1
+  }]).then(function(updatedCheckout) {
+    checkout = updatedCheckout;
+    openCart();
+  }).catch(function(error) {
+    console.error('Unable to add product:', error);
+    alert('Unable to add this product. Please try again.');
+  });
 };
 
     card.append(photo, title, size, button);
