@@ -320,10 +320,70 @@ ui.createComponent('product', {
 })();
 /*]]>*/
 </script>
-  
+    <style>
+#cart-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 9998;
+}
+
+#side-cart {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: min(380px, 100%);
+  height: 100%;
+  background: #fff5f8;
+  box-shadow: -4px 0 20px #0002;
+  z-index: 9999;
+  transition: right 0.3s ease;
+  padding: 25px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+#side-cart.open {
+  right: 0;
+}
+
+#side-cart h2 {
+  color: #d65a91;
+}
+
+#cart-items {
+  margin: 25px 0;
+}
+
+#cart-checkout {
+  background: #e58aaf;
+  color: white;
+  border: none;
+  padding: 15px;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+</style>
   <footer>
     <p>Michelle's Beauty Glow © 2026</p>
   </footer>
+  <div id="cart-overlay" onclick="closeCart()"></div>
+
+<div id="side-cart">
+  <button onclick="closeCart()"
+    style="float:right;border:0;background:none;
+    font-size:26px;cursor:pointer;">&times;</button>
+
+  <h2>Your Shopping Bag 🛍️</h2>
+  <div id="cart-items"></div>
+  <h3 id="cart-total">Total: $0.00</h3>
+
+  <button id="cart-checkout" onclick="goToCheckout()">
+    Checkout
+  </button>
+</div>
 <a href="#" onclick="event.preventDefault(); openHomeCart();"
    style="position:fixed;
           top:20px;
@@ -339,14 +399,128 @@ ui.createComponent('product', {
 </a>
  <script>
 function openHomeCart() {
-  const cart = document.getElementById("side-cart");
-
-  if (cart) {
+  if (typeof openCart === "function" &&
+      document.getElementById("side-cart")) {
     openCart();
   } else {
-    alert("The shopping cart is not connected to Home yet.");
+    window.location.href = "body-oil.html?openCart=1";
   }
 }
-</script>
+function openCart() {
+if (!checkout) {
+    alert("The shopping cart is not ready yet.");
+    return;
+}
+  const items = document.getElementById('cart-items');
+  items.innerHTML = '';
+
+  checkout.lineItems.forEach(function(item) {
+  const div = document.createElement('div');
+  div.style.cssText =
+    'padding:15px 0;border-bottom:1px solid #e5c5d1;';
+
+  const row = document.createElement('div');
+  row.style.cssText =
+    'display:flex;align-items:center;gap:12px;';
+
+  const photo = document.createElement('img');
+  const image = item.variant?.image || item.image;
+  if (image && image.src) {
+    photo.src = image.src;
+    photo.alt = item.title;
+    photo.style.cssText =
+      'width:65px;height:65px;object-fit:cover;border-radius:10px;';
+    row.appendChild(photo);
+  }
+
+  const info = document.createElement('div');
+
+  const name = document.createElement('strong');
+  name.textContent = item.title;
+
+  const details = document.createElement('p');
+  details.textContent = item.variant.title;
+  details.style.margin = '5px 0';
+
+  const controls = document.createElement('div');
+  controls.style.cssText =
+    'display:flex;align-items:center;gap:10px;margin-top:10px;';
+
+  const minus = document.createElement('button');
+  minus.textContent = '−';
+
+  const quantity = document.createElement('span');
+  quantity.textContent = item.quantity;
+
+  const plus = document.createElement('button');
+  plus.textContent = '+';
+
+  const remove = document.createElement('button');
+  remove.textContent = 'Remove';
+  remove.style.color = '#c0396b';
+
+  [minus, plus, remove].forEach(function(btn) {
+    btn.style.cursor = 'pointer';
+    btn.style.padding = '6px 10px';
+  });
+
+  function updateQuantity(newQuantity) {
+    const request = newQuantity <= 0
+      ? client.checkout.removeLineItems(checkout.id, [item.id])
+      : client.checkout.updateLineItems(checkout.id, [
+          { id: item.id, quantity: newQuantity }
+        ]);
+
+    minus.disabled = true;
+    plus.disabled = true;
+    remove.disabled = true;
+
+    request.then(function(updatedCheckout) {
+      checkout = updatedCheckout;
+      openCart();
+    }).catch(function(error) {
+      console.error('Unable to update cart:', error);
+      alert('Unable to update your cart. Please try again.');
+      openCart();
+    });
+  }
+
+  minus.onclick = function() {
+    updateQuantity(item.quantity - 1);
+  };
+
+  plus.onclick = function() {
+    updateQuantity(item.quantity + 1);
+  };
+
+  remove.onclick = function() {
+    updateQuantity(0);
+  };
+
+  controls.append(minus, quantity, plus, remove);
+  info.append(name, details, controls);
+  row.appendChild(info);
+  div.appendChild(row);
+  items.appendChild(div);
+});
+  const total = checkout.totalPrice.amount || checkout.totalPrice;
+  document.getElementById('cart-total').textContent =
+    'Total: $' + Number(total).toFixed(2);
+
+  document.getElementById('side-cart').classList.add('open');
+  document.getElementById('cart-overlay').style.display = 'block';
+}
+
+function closeCart() {
+  document.getElementById('side-cart').classList.remove('open');
+  document.getElementById('cart-overlay').style.display = 'none';
+}
+
+function goToCheckout() {
+  if (checkout && checkout.webUrl) {
+    window.location.href = checkout.webUrl;
+  }
+}
+ </script>
 </body>
 </html>
