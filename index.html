@@ -337,9 +337,15 @@ ui.createComponent('product', {
           z-index:9999;">
   🛍️ View Cart
 </a>
-  <script>
+ <script>
 function openHomeCart() {
-  window.location.href = "body-oil.html?openCart=1";
+  const cart = document.getElementById("side-cart");
+
+  if (cart) {
+    openCart();
+  } else {
+    alert("The shopping cart is not connected to Home yet.");
+  }
 }
 </script>
 </body>
