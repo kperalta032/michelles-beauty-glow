@@ -151,7 +151,8 @@
       storefrontAccessToken: '78d6d04d0b8e8628c699b6f22eb738a4',
     });
     ShopifyBuy.UI.onReady(client).then(function (ui) {
-      ui.createComponent('product', {
+     return;
+ui.createComponent('product', {
         id: '15444140130438',
         node: document.getElementById('product-component-1792973452370'),
         moneyFormat: '%24%7B%7Bamount%7D%7D',
